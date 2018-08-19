@@ -5,10 +5,19 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>Survey</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+<!-- =======================JQuery=============================  -->
     <script src="https://code.jquery.com/jquery-3.3.1.min.js"
   integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
   crossorigin="anonymous"></script>
+    
+<!-- ===========================Bootstrap======================================= -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+
+    <!-- ==============================Bootstrap JQuery======================================= -->
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+
+
+    
 </head>
 <body>
     <div class="container">
@@ -155,8 +164,9 @@
         <br>
         <br>
         <button type="submit" class="btn btn-primary" id="submit">Submit</button>
+        
     </div>
-    <div id="best-match-div"></div>
+    
     <div id= "best-match-modal" class="modal" tabindex="-1" role="dialog">
             <div class="modal-dialog" role="document">
               <div class="modal-content">
@@ -167,16 +177,17 @@
                   </button>
                 </div>
                 <div class="modal-body">
-                  <p id= "best-match-info"></p>
+                  <h2 id= "best-match-info"></h2>
+                  <img id="best-match-img" src="" alt="" height="150px">
                 </div>
                 <div class="modal-footer">
                   <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                  <button type="button" class="btn btn-primary">Save changes</button>
                 </div>
               </div>
             </div>
           </div>
 
+         
 </body>
 </html>
 
@@ -185,6 +196,21 @@
 $("#submit").on("click", function(event) {
       event.preventDefault();
     console.log("button: clicked");
+     // Form validation
+     function validateForm() {
+      var isValid = true;
+      $('.form-control').each(function() {
+        if ($(this).val() === '')
+          isValid = false;
+      });
+      $('.chosen-select').each(function() {
+        if ($(this).val() === "")
+          isValid = false
+      })
+      return isValid;
+    }
+    // If all required fields are filled
+    if (validateForm() == true) {
       // Here we grab the form elements
       var newFriend = {
           name: $("#name").val().trim(),
@@ -192,7 +218,7 @@ $("#submit").on("click", function(event) {
           scores: [$("#q1").val(), $("#q2").val(), $("#q3").val(), $("#q4").val(), $("#q5").val(), $("#q6").val(), $("#q7").val(), $("#q8").val(), $("#q9").val(), $("#q10").val()]
         };
         var currentURL = window.location.origin;
-$.post("api/friends", newFriend, 
+$.post(currentURL+ "/api/friends", newFriend, 
     function(data) {
         $("#name").val("");
         $("#photo").val("");
@@ -207,11 +233,15 @@ $.post("api/friends", newFriend,
         $("#q9").val("");
         $("#q10").val("");
     console.log("Best Match: ", data);
-    // $("#best-match-modal").modal('show');
-    $("#best-match-div").append(data);
+    console.log("current URL: ", currentURL);
+    
+    $("#best-match-info").text(data.name);
+    $("#best-match-img").attr("src", data.photo);
+    $("#best-match-modal").modal('toggle');
     });
-
-
+} else {
+    alert("Fill out all lines before submitting!")
+}
 
 });
 </script>
